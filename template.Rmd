@@ -1,0 +1,93 @@
+---
+title: "Example Analysis"
+author: "Example User"
+date: "April 28, 2017"
+output: html_document
+---
+
+## Setup Your Document
+
+You can delete the header here, but you will want a setup code chunk to tell 
+RStudio what packages it needs to run your analysis. 
+
+```{r setup, include=TRUE}
+library(tidyverse)
+library(OpenSDPsynthR)
+# Chunk output options for knitr
+knitr::opts_chunk$set(comment=NA, warning=FALSE, echo=TRUE,
+                      error=FALSE, message=FALSE, fig.align='center',
+                      fig.width=8, fig.height=6, dpi = 144)
+```
+
+
+# Generate Data or Use Your Own
+
+To make your analytical approach 100% reproducible and able to be applied by 
+other analysts, take advantage of the `OpenSDPsynthR` synthetic data engine. 
+With just a few lines of code you can generate a synthetic dataset for teaching 
+and sharing your work. 
+
+```{r}
+library(OpenSDPsynthR)
+sim_data <- simpop(nstu = 100)
+names(sim_data)
+```
+
+Using `simpop` you create a series of student/school datasets. You can apply 
+cleaner functions to these datasets to convert them to CEDS data specifications
+with `ceds_cleaner()` or to create analysis file following `SDP` guidelines using 
+`sdp_cleaner()`. Or you can work with the tables individually for your own purposes. 
+
+If you'd like to use your own data rather than OpenSDP's synthetic data, make sure the data is already publicly available and/or does not contain sensitive or identifiable information. If your dataset cannot be released to the public due to data privacy concerns, we recommend using the R package, `synthpop` to anonymize your data. Learn more about `synthpop` [here](https://cran.r-project.org/web/packages/synthpop/index.html).
+
+# Ideas for Starting Your Analysis
+
+You should feel free to create and annotate your project as you see fit. However,
+if you have trouble getting started here's an example outline for describing your project. We suggest providing some text with code about how you pulled your data together. Then, unlock the power of R Markdown by providing additional text on the context and reasoning behind your analyses.
+
+## Background and Literature
+
+In this section include the motivation for the analysis and any 
+background research that informed previous solutions to the problem and your 
+approach. You can include citations using the a `BibTex` citation file and the 
+`knitr::write_bib` function, or you can link to them directly using HTML. 
+
+## Clean the Data
+
+In this section, describe the process you use to clean the data, organize the 
+variables, and apply business rules for data consistency. 
+
+
+## Connect the Data
+
+In this section, describe how you combine data from different levels of aggregation 
+and compute calculated variables to create a data set (or data sets) suitable 
+for analysis. 
+
+```{r connect, message=FALSE, warnings=FALSE}
+# Create college going data
+cgdata <- sdp_cleaner(sim_data)
+```
+
+
+## Analyze the Data
+
+In this section, describe your analyses and show the code you used to complete 
+each analysis. Include diagnostic plots, summary tables, and model output.
+
+```{r examplePlot}
+library(ggplot2)
+ggplot(sim_data$stu_assess, aes(x = year, y = math_ss, group = sid)) + 
+  geom_line(alpha = I(0.6)) + geom_smooth(aes(group = 1)) + 
+  theme_classic() + 
+  labs(x = "Test Year", y = "Math Score", title = "Student Math Score Trajectories") +
+  scale_x_continuous(breaks = c(min(sim_data$stu_assess$year):max(sim_data$stu_assess$year)))
+```
+
+
+## Report the Results
+
+In this section, make your final results available. Include explanatory graphics 
+that you would use in a presentation. Include ways of demonstrating the 
+substantive impact of your results.
+
